@@ -1,0 +1,22 @@
+﻿  Compiling CUDA source file parallel_iter.cu...
+  
+  D:\Projects\LevelDB\leveldb_cuda>"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.5\bin\nvcc.exe" -gencode=arch=compute_52,code=\"sm_52,compute_52\" --use-local-env -ccbin "C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Tools\MSVC\14.29.30037\bin\HostX86\x86" -x cu   -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.5\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.5\include"     --keep-dir Release  -maxrregcount=0  --machine 32 --compile -cudart static    -DWIN32 -DNDEBUG -D_CONSOLE -D_UNICODE -DUNICODE -Xcompiler "/EHsc /W3 /nologo /O2 /FdRelease\vc142.pdb /FS   /MD " -o Release\parallel_iter.cu.obj "D:\Projects\LevelDB\leveldb_cuda\parallel_iter.cu" 
+  parallel_iter.cu
+  block.cpp
+  block_builder.cpp
+D:\Projects\LevelDB\leveldb_cuda\block_builder.cpp(84,22): warning C4018: “<”: 有符号/无符号不匹配
+  coding.cpp
+D:\Projects\LevelDB\leveldb_cuda\coding.cpp(63,26): warning C4244: “=”: 从“uint64_t”转换到“uint8_t”，可能丢失数据
+  comparator.cpp
+  env.cpp
+  iterator.cpp
+  logging.cpp
+  main.cpp
+  parallel_iterator.cpp
+  status.cpp
+parallel_iterator.obj : error LNK2005: "class leveldb::Iterator * __cdecl leveldb::NewErrorIterator(class leveldb::Status const &)" (?NewErrorIterator@leveldb@@YAPAVIterator@1@ABVStatus@1@@Z) 已经在 iterator.obj 中定义
+parallel_iterator.obj : error LNK2005: "class leveldb::Iterator * __cdecl leveldb::NewEmptyIterator(void)" (?NewEmptyIterator@leveldb@@YAPAVIterator@1@XZ) 已经在 iterator.obj 中定义
+parallel_iterator.obj : error LNK2005: "public: void __thiscall leveldb::Iterator::RegisterCleanup(void (__cdecl*)(void *,void *),void *,void *)" (?RegisterCleanup@Iterator@leveldb@@QAEXP6AXPAX0@Z00@Z) 已经在 iterator.obj 中定义
+parallel_iterator.obj : error LNK2005: "public: virtual __thiscall leveldb::Iterator::~Iterator(void)" (??1Iterator@leveldb@@UAE@XZ) 已经在 iterator.obj 中定义
+parallel_iterator.obj : error LNK2005: "public: __thiscall leveldb::Iterator::Iterator(void)" (??0Iterator@leveldb@@QAE@XZ) 已经在 iterator.obj 中定义
+D:\Projects\LevelDB\leveldb_cuda\Release\leveldb_cuda.exe : fatal error LNK1169: 找到一个或多个多重定义的符号
