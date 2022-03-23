@@ -95,6 +95,9 @@
     <ClInclude Include="parallel_iter.cuh">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="benchmark.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="parallel_iter.cu">

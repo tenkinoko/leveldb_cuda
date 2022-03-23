@@ -153,6 +153,7 @@
     <ClCompile Include="status.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="benchmark.h" />
     <ClInclude Include="block.h" />
     <ClInclude Include="block_builder.h" />
     <ClInclude Include="coding.h" />

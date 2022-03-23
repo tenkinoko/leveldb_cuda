@@ -155,7 +155,7 @@ namespace leveldb {
                 value_ = Slice(data_ + value_offset[ptr], value_length[ptr]);
             }
         }
-
+        // TODO: not to be finish
         void Seek(const Slice& target) override {
             uint32_t left = 0;
             uint32_t right = num_kv_ - 1;

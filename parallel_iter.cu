@@ -1,4 +1,5 @@
 #include "parallel_iter.cuh"
+#include "benchmark.h"
 #include <cstdlib>
 #include <cstdio>
 #include <vector>
@@ -178,6 +179,10 @@ void unpack_GPU(const char* data_, unsigned int data_size,
     CHECK(cudaMemcpy(d_data_, data_, data_size, cudaMemcpyHostToDevice));
     dim3 block(256, 1);
     dim3 grid((num_restart + block.x - 1) / block.x, 1);
+
+    //LARGE_INTEGER freq, head, tail;
+    //prepare(freq);
+    //timer(head);
     unpack_kernel << <grid, block >> > (/*const char* data_*/ d_data_,
         /* unsigned int restarts_ */ restarts_,
         /* int num_restart */ num_restart,
@@ -186,6 +191,8 @@ void unpack_GPU(const char* data_, unsigned int data_size,
         /* unsigned int* */ d_value_offset,
         /* unsigned int* */ d_value_length);
     CHECK(cudaDeviceSynchronize());
+    //timer(tail);
+    //output("Kernel: ", total(head, tail));
 
     // data transfer from device to host
     CHECK(cudaMemcpy(kv_pair_h, kv_pair_d, sizeof(kv_pair) * num_kv, cudaMemcpyDeviceToHost));
