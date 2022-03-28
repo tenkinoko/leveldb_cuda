@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "slice.h"
+#include "linear_regression_coding.h"
 
 namespace leveldb {
 
@@ -22,11 +23,12 @@ namespace leveldb {
 		BlockBuilder& operator=(const BlockBuilder&) = delete;
 
 		// Reset the contents as if the BlockBuilder was just constructed.
-		void Reset();
+		/*void Reset();*/
 
 		// REQUIRES: Finish() has not been called since the last call to Reset().
 		// REQUIRES: key is larger than any previously added key
-		void Add(const Slice& key, const Slice& value);
+		/*void Add(const Slice& key, const Slice& value);*/
+		void Add(Slice& key, size_t value_ptr);
 
 		// Finish building the block and return a slice that refers to the
 		// block contents.  The returned slice will remain valid for the
@@ -35,7 +37,7 @@ namespace leveldb {
 
 		// Returns an estimate of the current (uncompressed) size of the block
 		// we are building.
-		size_t CurrentSizeEstimate() const;
+		/*size_t CurrentSizeEstimate() const;*/
 
 		// Return true iff no entries have been added since the last Reset()
 		bool empty() const { return buffer_.empty(); }
@@ -48,6 +50,9 @@ namespace leveldb {
 		uint32_t num_kv_;                 // Total Number of entries
 		bool finished_;                   // Has Finish() been called?
 		std::string last_key_;
+		LinearModelBuilder lr_builder_;
+		std::vector<size_t> value_ptr_;
+		std::vector<size_t> key_ptr_;
 	};
 
 }  // namespace leveldb

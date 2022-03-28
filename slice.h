@@ -27,7 +27,7 @@ namespace leveldb {
     class LEVELDB_EXPORT Slice {
     public:
         // Create an empty slice.
-        Slice() : data_(""), size_(0) {}
+        Slice() : data_(""), size_(0), finish_strtoull_(false) {}
 
         // Create a slice that refers to d[0,n-1].
         Slice(const char* d, size_t n) : data_(d), size_(n) {}
@@ -47,6 +47,15 @@ namespace leveldb {
 
         // Return the length (in bytes) of the referenced data
         size_t size() const { return size_; }
+
+        // Return the ull value of the referenced data
+        size_t ull() {
+            if (finish_strtoull_) return ULL_;
+            else {
+                ToULL();
+                return ULL_;
+            }
+        }
 
         // Return true iff the length of the referenced data is zero
         bool empty() const { return size_ == 0; }
@@ -71,8 +80,8 @@ namespace leveldb {
             size_ -= n;
         }
 
-        // Return a string that contains the copy of the referenced data.
-        std::string ToString() const { return std::string(data_, size_); }
+        //// Return a string that contains the copy of the referenced data.
+        //std::string ToString() const { return std::string(data_, size_); }
 
         // Three-way comparison.  Returns value:
         //   <  0 iff "*this" <  "b",
@@ -88,6 +97,56 @@ namespace leveldb {
     private:
         const char* data_;
         size_t size_;
+        size_t ULL_;
+        bool finish_strtoull_ = false;
+
+        char toHex(unsigned char v) const{
+            if (v <= 9) {
+                return '0' + v;
+            }
+            return 'A' + v - 10;
+        }
+
+        // most of the code is for validation/error check
+        int fromHex(char c) {
+            // toupper:
+            if (c >= 'a' && c <= 'f') {
+                c -= ('a' - 'A');  // aka 0x20
+            }
+            // validation
+            if (c < '0' || (c > '9' && (c < 'A' || c > 'F'))) {
+                return -1;  // invalid not 0-9A-F hex char
+            }
+            if (c <= '9') {
+                return c - '0';
+            }
+            return c - 'A' + 10;
+        }
+
+        // Return a string that contains the copy of the referenced data.
+        std::string ToString(bool hex)  const{
+            std::string result;
+            if (hex) {
+                result.reserve(2 * size_);
+                for (size_t i = 0; i < size_; ++i) {
+                    unsigned char c = data_[i];
+                    result.push_back(toHex(c >> 4));
+                    result.push_back(toHex(c & 0xf));
+                }
+                return result;
+            }
+            else {
+                result.assign(data_, size_);
+                return result;
+            }
+        }
+
+        // ull: unsigned long long
+        void ToULL() {
+            std::string str = ToString(false);
+            ULL_ = std::stoull(str, nullptr, 16);
+            finish_strtoull_ = true;
+        }
     };
 
     inline bool operator==(const Slice& x, const Slice& y) {

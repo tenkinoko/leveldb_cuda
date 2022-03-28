@@ -98,6 +98,9 @@
     <ClInclude Include="benchmark.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="linear_regression_coding.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="parallel_iter.cu">

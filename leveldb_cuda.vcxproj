@@ -162,6 +162,7 @@
     <ClInclude Include="export.h" />
     <ClInclude Include="format.h" />
     <ClInclude Include="iterator.h" />
+    <ClInclude Include="linear_regression_coding.h" />
     <ClInclude Include="logging.h" />
     <ClInclude Include="no_destructor.h" />
     <ClInclude Include="options.h" />
