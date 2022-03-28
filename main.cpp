@@ -71,10 +71,10 @@ int main() {
         leveldb::BlockBuilder blockbuilder(options);
 
         for (int i = BASE; i < BASE + TOTALNUM; i++) {
-            std::string key_base = "abcdefgh";
-            key_base += std::to_string(i);
+            /*std::string key_base = "abcdefgh";*/
+            std::string key_base = std::to_string(i);
             leveldb::Slice key(key_base);
-            size_t value = ULLONG_MAX;
+            size_t value = i;
             //TODO:
             blockbuilder.Add(key, value);
         }
@@ -84,7 +84,7 @@ int main() {
             /*heap_allocate*/ false);
         leveldb::Block block(contents);
 
-        leveldb::Iterator* Iter = block.NewIterator(leveldb::BytewiseComparator());
+        leveldb::Iterator* Iter = block.NewLRCIterator(leveldb::BytewiseComparator());
         Iter->SeekToFirst();
         Iter->Next();
 

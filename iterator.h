@@ -69,6 +69,7 @@ namespace leveldb {
         // REQUIRES: Valid()
         virtual Slice value() const = 0;
 
+
         // If an error has occurred, return it.  Else return an ok status.
         virtual Status status() const = 0;
 

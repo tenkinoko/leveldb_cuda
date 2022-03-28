@@ -144,7 +144,7 @@ namespace leveldb {
         // ull: unsigned long long
         void ToULL() {
             std::string str = ToString(false);
-            ULL_ = std::stoull(str, nullptr, 16);
+            ULL_ = std::stoull(str, nullptr, 10);
             finish_strtoull_ = true;
         }
     };
