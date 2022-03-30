@@ -141,11 +141,24 @@ namespace leveldb {
 
         Slice key() const override {
             size_t key_int = slope_ * current_ + intercept_ + min_error_ + Num_non_neg_error();
-            return Slice(std::to_string(key_int));
+            std::string key = std::to_string(key_int);
+            Slice res(key);
+            return res;
+        }
+
+        std::string key_str() const override {
+            size_t key_int = slope_ * current_ + intercept_ + min_error_ + Num_non_neg_error();
+            return std::to_string(key_int);
         }
 
         Slice value() const override{
-            return Slice(std::to_string(Num_value()));
+            std::string key = std::to_string(Num_value());
+            Slice res(key);
+            return res;
+        }
+
+        std::string value_str() const override {
+            return std::to_string(Num_value());
         }
 
         void Next() override {

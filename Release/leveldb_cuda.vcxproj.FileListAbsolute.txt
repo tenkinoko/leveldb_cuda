@@ -1,1 +1,0 @@
-D:\Projects\LevelDB\leveldb_cuda\Release\leveldb_cuda.exe

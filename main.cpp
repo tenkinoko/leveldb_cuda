@@ -95,8 +95,8 @@ int main() {
         for (; Iter->Valid(); Iter->Next()) {
             leveldb::Slice key(Iter->key());
             leveldb::Slice value(Iter->value());
-            std::string value_(value.data(), value.size());
-            std::cout << key.data() << " " << value_ << std::endl;
+            //std::string value_(value.data(), value.size());
+            //std::cout << Iter->key_str() << " " << Iter->value_str() << std::endl;
         }
         timer(tail);
         t2 += total(head, tail);

@@ -87,6 +87,7 @@ namespace leveldb {
             (static_cast<uint32_t>(buffer[2]) << 16) |
             (static_cast<uint32_t>(buffer[3]) << 24);
     }
+
     inline uint64_t DecodeFixed64(const char* ptr) {
         const uint8_t* const buffer = reinterpret_cast<const uint8_t*>(ptr);
 

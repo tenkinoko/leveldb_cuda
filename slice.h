@@ -146,6 +146,7 @@ namespace leveldb {
             std::string str = ToString(false);
             ULL_ = std::stoull(str, nullptr, 10);
             finish_strtoull_ = true;
+            
         }
     };
 

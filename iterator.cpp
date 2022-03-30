@@ -60,6 +60,12 @@ namespace leveldb {
                 assert(false);
                 return Slice();
             }
+            std::string key_str() const override {
+                return std::string("");
+            }
+            std::string value_str() const override {
+                return std::string("");
+            }
             Status status() const override { return status_; }
 
         private:

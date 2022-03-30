@@ -7,6 +7,7 @@
 #include <limits>
 
 #include "slice.h"
+#include <iostream>
 
 namespace leveldb {
     class LinearModelBuilder {
@@ -20,19 +21,19 @@ namespace leveldb {
             return non_neg_error_;
         }
 
-        size_t slope() const {
+        int64_t slope() const {
             return slope_;
         }
 
-        size_t intercept() const {
+        int64_t intercept() const {
             return intercept_;
         }
 
-        size_t min_error() const {
+        int64_t min_error() const {
             return min_error_;
         }
 
-        size_t count() const {
+        int64_t count() const {
             return count_;
         }
 
@@ -46,7 +47,7 @@ namespace leveldb {
             count_++;
         }
 
-        //void Add(size_t& key) {
+        //void Add(int64_t& key) {
         //    auto y_temp = key;
         //    y_.push_back(y_temp);
         //    x_sum_ += count_;
@@ -62,7 +63,8 @@ namespace leveldb {
             auto l_x_y = xy_sum_ - x_sum_ * y_sum_ / count_;
             auto l_x_x = xx_sum_ - x_sum_ * x_sum_ / count_;
             auto slope = l_x_y / l_x_x;
-            auto intercept = y_bar - static_cast<size_t>(slope * x_bar);
+            
+            int64_t intercept = y_bar - static_cast<int64_t>(slope * x_bar);
 
             slope_ = slope;
             intercept_ = intercept;
@@ -71,7 +73,7 @@ namespace leveldb {
         void finish() {
             auto min_error = std::numeric_limits<int>::max();
             for (int i = 0; i < count_; i++) {
-                auto error = y_[i] - slope_ * i + intercept_;
+                auto error = y_[i] - (slope_ * i + intercept_);
                 if (error < min_error) min_error = error;
                 error_.emplace_back(error);
             }
@@ -85,16 +87,16 @@ namespace leveldb {
         }
 
     private:
-        unsigned int count_ = 0;
-        size_t x_sum_ = 0;
-        size_t y_sum_ = 0;
-        size_t xy_sum_ = 0;
-        size_t xx_sum_ = 0;
-        size_t slope_ = 0;
-        size_t intercept_ = 0;
-        size_t min_error_ = 0;
-        std::vector<size_t> y_;
-        std::vector<size_t> error_;
+        int32_t count_ = 0;
+        int64_t x_sum_ = 0;
+        int64_t y_sum_ = 0;
+        int64_t xy_sum_ = 0;
+        int64_t xx_sum_ = 0;
+        int64_t slope_ = 0;
+        int64_t intercept_ = 0;
+        int64_t min_error_ = 0;
+        std::vector<int64_t> y_;
+        std::vector<int64_t> error_;
         std::vector<unsigned int> non_neg_error_;
     };
 
