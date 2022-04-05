@@ -63,11 +63,15 @@ namespace leveldb {
 		// REQUIRES: Valid()
 		virtual Slice key() const = 0;
 
+		virtual std::string key_str() const = 0;
+
 		// Return the value for the current entry.  The underlying storage for
 		// the returned slice is valid only until the next modification of
 		// the iterator.
 		// REQUIRES: Valid()
 		virtual Slice value() const = 0;
+
+		virtual std::string value_str() const = 0;
 
 		// If an error has occurred, return it.  Else return an ok status.
 		virtual Status status() const = 0;

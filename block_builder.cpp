@@ -52,6 +52,7 @@ namespace leveldb {
         auto min_error = lr_builder_.min_error();
         auto non_neg_error = lr_builder_.non_negative_error();
         unsigned int num_kv = static_cast<unsigned int> (lr_builder_.count());
+        uint32_t flag_slope, flag_intercept, flag_min_error;
 
         //Add slope to buffer_
         PutFixed64(&buffer_, slope);
@@ -69,6 +70,13 @@ namespace leveldb {
         }
         //Add num_kv to buffer_
         PutFixed32(&buffer_, num_kv);
+        flag_slope = (slope < 0);
+        flag_intercept = (intercept < 0);
+        flag_min_error = (min_error < 0);
+
+        PutFixed32(&buffer_, flag_slope);
+        PutFixed32(&buffer_, flag_intercept);
+        PutFixed32(&buffer_, flag_min_error);
         return Slice(buffer_);
 
     }

@@ -32,20 +32,53 @@ namespace leveldb {
     //    return DecodeFixed32(data_ + size_ - 3 * sizeof(uint32_t));
     //}
 
-    inline size_t Block::Num_slope() const {
-        return DecodeFixed64(data_);
+    inline int64_t Block::Num_slope() const {
+        size_t res;
+        if (DecodeFixed32(data_ + size_ - 3 * sizeof(uint32_t))) {
+            res = ULLONG_MAX - DecodeFixed64(data_) + 1;
+            int64_t slope = res;
+            return -slope;
+            
+        }
+        else {
+            res = DecodeFixed64(data_);
+            int64_t slope = res;
+            return slope;
+        }
     }
 
-    inline size_t Block::Num_intercept() const {
-        return DecodeFixed64(data_ + sizeof(size_t));
+    inline int64_t Block::Num_intercept() const {
+        size_t res;
+        if (DecodeFixed32(data_ + size_ - 2 * sizeof(uint32_t))) {
+            res = ULLONG_MAX - DecodeFixed64(data_ + sizeof(size_t)) + 1;
+            int64_t intercept = res;
+            return -intercept;
+
+        }
+        else {
+            res = DecodeFixed64(data_ + sizeof(size_t));
+            int64_t intercept = res;
+            return intercept;
+        }
     }
 
-    inline size_t Block::Num_min_error() const {
-        return DecodeFixed64(data_ + 2 * sizeof(size_t));
+    inline int64_t Block::Num_min_error() const {
+        size_t res;
+        if (DecodeFixed32(data_ + size_ - sizeof(uint32_t))) {
+            res = ULLONG_MAX - DecodeFixed64(data_ + 2 * sizeof(size_t)) + 1;
+            int64_t err = res;
+            return -err;
+
+        }
+        else {
+            res = DecodeFixed64(data_ + 2 * sizeof(size_t));
+            int64_t err = res;
+            return err;
+        }
     }
 
     inline uint32_t Block::Num_KV() const {
-        return DecodeFixed32(data_ + size_ - sizeof(uint32_t));
+        return DecodeFixed32(data_ + size_ - 4 * sizeof(uint32_t));
     }
 
 
@@ -121,9 +154,9 @@ namespace leveldb {
         //std::string key_;
         //size_t value_;
 
-        size_t slope_;
-        size_t intercept_;
-        size_t min_error_;
+        int64_t slope_;
+        int64_t intercept_;
+        int64_t min_error_;
 
         size_t Num_non_neg_error() const;
         size_t Num_value() const;
@@ -204,6 +237,118 @@ namespace leveldb {
 
     inline size_t Block::LRC_Iter::Num_value() const {
         return DecodeFixed32(data_ + 3 * sizeof(size_t) + KV_size_ * sizeof(uint32_t) + current_ * sizeof(uint32_t));
+    }
+
+    class Block::LRC_Parallel_Iter : public Parallel_Iterator {
+    private:
+        const Comparator* const comparator_;
+        const char* const data_;
+        uint32_t data_size_;
+        uint32_t KV_size_;
+        uint32_t current_;
+        //std::string key_;
+        //size_t value_;
+
+        int64_t slope_;
+        int64_t intercept_;
+        int64_t min_error_;
+
+        size_t Num_non_neg_error() const;
+        size_t Num_value() const;
+
+        size_t* key_;
+        //uint32_t* value_;
+
+    public:
+        LRC_Parallel_Iter(const Comparator* comparator, const char* data, uint32_t data_size, uint32_t KV_size,
+            size_t slope, size_t intercept, size_t min_error)
+            : comparator_(comparator),
+            current_(0),
+            data_(data),
+            data_size_(data_size),
+            KV_size_(KV_size),
+            slope_(slope),
+            intercept_(intercept),
+            min_error_(min_error) {
+            key_ = new size_t[KV_size_];
+            Slice data_gpu = Slice(data_, data_size - (KV_size + 4) * sizeof(uint32_t));
+            //value_ = new uint32_t[KV_size_];
+            unpack_LRC_parallel(data_gpu);
+        }
+
+        ~LRC_Parallel_Iter(){
+            delete[] key_;
+            //delete[] value_;
+        }
+
+        Slice key() const override {
+            std::string key = std::to_string(key_[current_]);
+            Slice res(key);
+            return res;
+        }
+
+        //Slice value() const override {
+        //    std::string key = std::to_string(value_[current_]);
+        //    Slice res(key);
+        //    return res;
+        //}
+
+        std::string key_str() const override {
+            return std::to_string(key_[current_]);
+        }
+
+        Slice value() const override {
+            std::string key = std::to_string(Num_value());
+            Slice res(key);
+            return res;
+        }
+
+        std::string value_str() const override {
+            return std::to_string(Num_value());
+        }
+
+        void Next() override {
+            current_ += 1;
+        }
+
+        void Prev() override {
+            current_ -= 1;
+        }
+
+
+        void SeekToFirst() override {
+            current_ = -1;
+        }
+
+        void SeekToLast() override {
+
+        }
+
+        bool Valid() const override {
+            return current_ < KV_size_;
+        }
+
+        void Seek(const Slice& target) override {
+
+        }
+
+        Status status() const override { return Status::OK(); }
+
+        void unpack_LRC_parallel(Slice data_gpu) {
+            unpack_LRC_GPU(data_gpu.data(), data_gpu.size(), KV_size_, slope_, intercept_, min_error_, key_);
+        }
+    };
+
+    inline size_t Block::LRC_Parallel_Iter::Num_non_neg_error() const {
+        return DecodeFixed32(data_ + 3 * sizeof(size_t) + current_ * sizeof(uint32_t));
+    }
+
+    inline size_t Block::LRC_Parallel_Iter::Num_value() const {
+        return DecodeFixed32(data_ + 3 * sizeof(size_t) + KV_size_ * sizeof(uint32_t) + current_ * sizeof(uint32_t));
+    }
+
+    Parallel_Iterator* Block::NewLRC_Parallel_Iterator(const Comparator* comparator) {
+        return new LRC_Parallel_Iter(comparator, data_, size_, KV_size_, slope_, intercept_, min_error_);
     }
 
     //class Block::Parallel_Iter : public Parallel_Iterator {
